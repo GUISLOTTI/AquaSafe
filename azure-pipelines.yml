@@ -1,0 +1,119 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '*.md'
+      - 'docs/**'
+
+pr:
+  branches:
+    include:
+      - main
+      - master
+
+variables:
+  buildConfiguration: 'Release'
+  dotnetVersion:      '10.x'
+  projectPath:        'AquaSafe.Api/AquaSafe.Api.csproj'
+
+  
+  azureSubscription:  'ScAquaSafe'           
+  webAppName:         'AquaSafe'           
+  resourceGroup:      'AquaSafe-Resource-Group' 
+
+stages:
+
+# STAGE 1 — Build e Teste
+- stage: Build
+  displayName: 'Build & Test'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build .NET 10'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+
+    # 1. Instalar .NET 10
+    - task: UseDotNet@2
+      displayName: 'Instalar .NET $(dotnetVersion)'
+      inputs:
+        packageType:  'sdk'
+        version:      $(dotnetVersion)
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    # 2. Restaurar pacotes NuGet
+    - task: DotNetCoreCLI@2
+      displayName: 'Restaurar pacotes'
+      inputs:
+        command:   'restore'
+        projects:  $(projectPath)
+        feedsToUse: 'select'
+
+    # 3. Build em Release
+    - task: DotNetCoreCLI@2
+      displayName: 'Build (Release)'
+      inputs:
+        command:       'build'
+        projects:      $(projectPath)
+        arguments:     '--configuration $(buildConfiguration) --no-restore'
+
+    # 4. Publicar artefato
+    - task: DotNetCoreCLI@2
+      displayName: 'Publicar projeto'
+      inputs:
+        command:             'publish'
+        publishWebProjects:  true
+        projects:            $(projectPath)
+        arguments:           '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/publish'
+        zipAfterPublish:     true
+        modifyOutputPath:    false
+
+    # 5. Exportar artefato para o próximo stage
+    - task: PublishPipelineArtifact@1
+      displayName: 'Exportar artefato'
+      inputs:
+        targetPath:   '$(Build.ArtifactStagingDirectory)/publish'
+        artifact:     'drop'
+        publishLocation: 'pipeline'
+
+
+# STAGE 2 — Deploy (só no push para main)
+
+- stage: Deploy
+  displayName: 'Deploy → Azure App Service'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+  jobs:
+  - deployment: DeployWeb
+    displayName: 'Deploy App Service'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          # Baixar artefato do stage anterior
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Baixar artefato'
+            inputs:
+              artifactName:    'drop'
+              targetPath:      '$(Pipeline.Workspace)/drop'
+
+          # Deploy no Azure App Service F1
+          - task: AzureWebApp@1
+            displayName: 'Deploy → $(webAppName)'
+            inputs:
+              azureSubscription:  $(azureSubscription)
+              appType:            'webAppLinux'
+              appName:            $(webAppName)
+              resourceGroupName:  $(resourceGroup)
+              package:            '$(Pipeline.Workspace)/drop/*.zip'
+              runtimeStack:       'DOTNETCORE|10.0'
+              startUpCommand:     'dotnet AquaSafe.Api.dll'
+              deploymentMethod:   'auto'
