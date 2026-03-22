@@ -1,7 +1,6 @@
 trigger:
   branches:
     include:
-      - main
       - master
   paths:
     exclude:
@@ -11,7 +10,6 @@ trigger:
 pr:
   branches:
     include:
-      - main
       - master
 
 variables:
@@ -81,12 +79,14 @@ stages:
         publishLocation: 'pipeline'
 
 
-# STAGE 2 — Deploy (só no push para main)
+# STAGE 2 — Deploy (só no push para master)
 
 - stage: Deploy
   displayName: 'Deploy → Azure App Service'
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), or(
+  eq(variables['Build.SourceBranch'], 'refs/heads/master')
+))
 
   jobs:
   - deployment: DeployWeb
