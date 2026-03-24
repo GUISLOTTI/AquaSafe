@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AquaSafe — Balneabilidade do Litoral de SC</title>
 
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
@@ -20,7 +19,6 @@
       flex-direction: column;
     }
 
-    /* ── Header ── */
     header {
       background: #1e3a5f;
       color: #fff;
@@ -36,7 +34,6 @@
     header p  { font-size: .78rem; opacity: .75; margin-top: 1px; }
     .logo { font-size: 1.6rem; }
 
-    /* ── Rain alert banner ── */
     #rain-banner {
       display: none;
       background: #744210;
@@ -48,7 +45,6 @@
     }
     #rain-banner.visible { display: block; }
 
-    /* ── Layout principal ── */
     .main {
       flex: 1;
       display: flex;
@@ -56,10 +52,8 @@
       position: relative;
     }
 
-    /* ── Mapa ── */
     #map { flex: 1; z-index: 1; }
 
-    /* ── Painel lateral ── */
     #panel {
       width: 300px;
       background: #fff;
@@ -95,7 +89,6 @@
 
     .panel-body { padding: 14px 16px; }
 
-    /* Status badge */
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -145,7 +138,6 @@
     .dot-improper { background: #ef4444; }
     .dot-unknown  { background: #94a3b8; }
 
-    /* ── Legenda ── */
     .legend {
       position: absolute;
       bottom: 30px;
@@ -162,7 +154,6 @@
     .legend-item  { display: flex; align-items: center; gap: 7px; margin-top: 4px; color: #4a5568; }
     .legend-dot   { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
 
-    /* ── Loading ── */
     #loading {
       position: absolute;
       inset: 0;
@@ -185,7 +176,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Responsivo ── */
     @media (max-width: 600px) {
       #panel { position: absolute; right: 0; top: 0; bottom: 0; z-index: 500; }
       #panel.hidden { display: none; }
@@ -209,7 +199,6 @@
 <div class="main">
   <div id="map"></div>
 
-  <!-- Legenda -->
   <div class="legend">
     <div class="legend-title">Balneabilidade</div>
     <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria para banho</div>
@@ -217,7 +206,6 @@
     <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> Sem dados</div>
   </div>
 
-  <!-- Painel de detalhe -->
   <div id="panel" class="hidden">
     <div class="panel-header">
       <button class="close-btn" onclick="closePanel()">✕</button>
@@ -245,18 +233,15 @@
     </div>
   </div>
 
-  <!-- Loading overlay -->
   <div id="loading">
     <span class="spinner"></span>
     Carregando dados de balneabilidade...
   </div>
 </div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // ── Inicialização do mapa ──────────────────────────────────────────────────
   const map = L.map('map', {
     center: [-26.92, -48.64],
     zoom: 11,
@@ -268,7 +253,6 @@
     maxZoom: 18
   }).addTo(map);
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
   const qualityColor = { Proper: '#10b981', Improper: '#ef4444', Unknown: '#94a3b8' };
   const qualityLabel = { Proper: 'Própria para banho', Improper: 'Imprópria para banho', Unknown: 'Sem dados' };
   const qualityClass = { Proper: 'status-proper', Improper: 'status-improper', Unknown: 'status-unknown' };
@@ -284,7 +268,6 @@
     };
   }
 
-  // ── Carrega praias ────────────────────────────────────────────────────────
   async function loadBeaches() {
     try {
       const res = await fetch('/api/beaches');
@@ -304,7 +287,6 @@
     }
   }
 
-  // ── Painel de detalhe ─────────────────────────────────────────────────────
   function openPanel(beach) {
     document.getElementById('panel-name').textContent = beach.name;
     document.getElementById('panel-city').textContent = beach.city;
@@ -344,7 +326,6 @@
     }
   }
 
-  // ── Inicializa ────────────────────────────────────────────────────────────
   loadBeaches();
 </script>
 </body>

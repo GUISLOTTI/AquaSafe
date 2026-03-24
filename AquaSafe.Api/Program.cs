@@ -4,7 +4,6 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Serviços ──────────────────────────────────────────────────────────────────
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<ImaService>();
 builder.Services.AddScoped<ImaService>();
@@ -19,7 +18,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// ── Middlewares ───────────────────────────────────────────────────────────────
 app.UseCors();
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -30,7 +28,6 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-// ── Endpoints ─────────────────────────────────────────────────────────────────
 app.MapBeachEndpoints();
 app.MapHealthEndpoints();
 

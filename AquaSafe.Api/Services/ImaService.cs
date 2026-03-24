@@ -45,7 +45,6 @@ public sealed class ImaService(
         new("navegantes-central",   "Praia de Navegantes",         "Navegantes",         -26.8985, -48.6530, WaterQuality.Unknown, "-", "-"),
     ];
 
-    // ── API pública ──────────────────────────────────────────────────────────
 
     public async Task<IReadOnlyList<Beach>> GetBeachesAsync(CancellationToken ct = default)
     {
