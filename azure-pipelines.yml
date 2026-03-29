@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - main
+      - master
   paths:
     exclude:
       - '*.md'
@@ -10,7 +10,6 @@ trigger:
 pr:
   branches:
     include:
-      - main
       - master
 
 variables:
@@ -80,12 +79,12 @@ stages:
         publishLocation: 'pipeline'
 
 
-# STAGE 2 — Deploy (só no push para main)
+# STAGE 2 — Deploy (só no push para master)
 
 - stage: Deploy
   displayName: 'Deploy → Azure App Service'
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   jobs:
   - deployment: DeployWeb
@@ -105,7 +104,7 @@ stages:
               artifactName:    'drop'
               targetPath:      '$(Pipeline.Workspace)/drop'
 
-          # Deploy no Azure App Service F1
+          # Deploy no Azure App Service
           - task: AzureWebApp@1
             displayName: 'Deploy → $(webAppName)'
             inputs:
@@ -114,6 +113,5 @@ stages:
               appName:            $(webAppName)
               resourceGroupName:  $(resourceGroup)
               package:            '$(Pipeline.Workspace)/drop/*.zip'
-              runtimeStack:       'DOTNETCORE|10.0'
               startUpCommand:     'dotnet AquaSafe.Api.dll'
               deploymentMethod:   'auto'
