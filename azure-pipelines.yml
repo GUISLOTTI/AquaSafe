@@ -104,7 +104,7 @@ stages:
               artifactName:    'drop'
               targetPath:      '$(Pipeline.Workspace)/drop'
 
-          # Deploy no Azure App Service F1
+          # Deploy no Azure App Service
           - task: AzureWebApp@1
             displayName: 'Deploy → $(webAppName)'
             inputs:
@@ -113,6 +113,5 @@ stages:
               appName:            $(webAppName)
               resourceGroupName:  $(resourceGroup)
               package:            '$(Pipeline.Workspace)/drop/*.zip'
-              runtimeStack:       'DOTNETCORE|10.0'
               startUpCommand:     'dotnet AquaSafe.Api.dll'
               deploymentMethod:   'auto'
