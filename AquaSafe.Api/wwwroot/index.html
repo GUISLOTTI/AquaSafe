@@ -1,332 +1,463 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AquaSafe — Balneabilidade do Litoral de SC</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AquaSafe — Balneabilidade do Litoral de SC</title>
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #f0f4f8;
-      color: #1a202c;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #1a202c;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    header {
-      background: #1e3a5f;
-      color: #fff;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,.25);
-      z-index: 1000;
-    }
-    header h1 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; }
-    header p  { font-size: .78rem; opacity: .75; margin-top: 1px; }
-    .logo { font-size: 1.6rem; }
+        header {
+            background: #1e3a5f;
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+            z-index: 1000;
+        }
 
-    #rain-banner {
-      display: none;
-      background: #744210;
-      color: #fef3c7;
-      font-size: .83rem;
-      padding: 7px 20px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    #rain-banner.visible { display: block; }
+            header h1 {
+                font-size: 1.15rem;
+                font-weight: 600;
+            }
 
-    .main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-      position: relative;
-    }
+            header p {
+                font-size: .78rem;
+                opacity: .75;
+                margin-top: 1px;
+            }
 
-    #map { flex: 1; z-index: 1; }
+        .logo {
+            font-size: 1.6rem;
+        }
 
-    #panel {
-      width: 300px;
-      background: #fff;
-      border-left: 1px solid #e2e8f0;
-      overflow-y: auto;
-      flex-shrink: 0;
-      transition: transform .25s ease;
-      z-index: 10;
-    }
-    #panel.hidden { transform: translateX(100%); }
+        #rain-banner {
+            display: none;
+            background: #744210;
+            color: #fef3c7;
+            font-size: .83rem;
+            padding: 7px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
 
-    .panel-header {
-      background: #1e3a5f;
-      color: #fff;
-      padding: 14px 16px 10px;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    .panel-header h2 { font-size: .95rem; font-weight: 600; }
-    .panel-header p  { font-size: .75rem; opacity: .75; margin-top: 2px; }
-    .close-btn {
-      float: right;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.1rem;
-      cursor: pointer;
-      opacity: .7;
-      margin-top: -2px;
-    }
-    .close-btn:hover { opacity: 1; }
+            #rain-banner.visible {
+                display: block;
+            }
 
-    .panel-body { padding: 14px 16px; }
+        .main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 14px;
-    }
-    .status-proper   { background: #d1fae5; color: #065f46; }
-    .status-improper { background: #fee2e2; color: #991b1b; }
-    .status-unknown  { background: #f1f5f9; color: #475569; }
+        #map {
+            flex: 1;
+            z-index: 1;
+            background-color: #aad3df;
+        }
 
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: .8rem;
-      padding: 6px 0;
-      border-bottom: 1px solid #f1f5f9;
-      color: #4a5568;
-    }
-    .info-row span:last-child { font-weight: 500; color: #1a202c; }
+        #panel {
+            width: 300px;
+            background: #fff;
+            border-left: 1px solid #e2e8f0;
+            overflow-y: auto;
+            flex-shrink: 0;
+            transition: transform .25s ease;
+            z-index: 10;
+        }
 
-    .history-title {
-      font-size: .78rem;
-      font-weight: 600;
-      color: #718096;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      margin: 16px 0 8px;
-    }
-    .history-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 5px 0;
-      font-size: .8rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .dot-proper   { background: #10b981; }
-    .dot-improper { background: #ef4444; }
-    .dot-unknown  { background: #94a3b8; }
+            #panel.hidden {
+                transform: translateX(100%);
+            }
 
-    .legend {
-      position: absolute;
-      bottom: 30px;
-      left: 12px;
-      background: rgba(255,255,255,.95);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: .75rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-      z-index: 500;
-      pointer-events: none;
-    }
-    .legend-title { font-weight: 600; margin-bottom: 6px; color: #1e3a5f; }
-    .legend-item  { display: flex; align-items: center; gap: 7px; margin-top: 4px; color: #4a5568; }
-    .legend-dot   { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .panel-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 16px 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+        }
 
-    #loading {
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      font-size: .9rem;
-      color: #4a5568;
-      gap: 10px;
-    }
-    #loading.hidden { display: none; }
-    .spinner {
-      width: 20px; height: 20px;
-      border: 2px solid #e2e8f0;
-      border-top-color: #1e3a5f;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+            .panel-header h2 {
+                font-size: .95rem;
+                font-weight: 600;
+            }
 
-    @media (max-width: 600px) {
-      #panel { position: absolute; right: 0; top: 0; bottom: 0; z-index: 500; }
-      #panel.hidden { display: none; }
-    }
-  </style>
+            .panel-header p {
+                font-size: .75rem;
+                color: #718096;
+                margin-top: 2px;
+            }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #718096;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 2px 4px;
+            flex-shrink: 0;
+        }
+
+            .close-btn:hover {
+                color: #1a202c;
+            }
+
+        .panel-body {
+            padding: 14px 16px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: .8rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .status-proper {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-improper {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-unknown {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .8rem;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+            color: #4a5568;
+        }
+
+            .info-row span:last-child {
+                font-weight: 500;
+                color: #1a202c;
+            }
+
+        .history-title {
+            font-size: .78rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin: 16px 0 8px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            font-size: .8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-proper {
+            background: #10b981;
+        }
+
+        .dot-improper {
+            background: #ef4444;
+        }
+
+        .dot-unknown {
+            background: #94a3b8;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            left: 12px;
+            background: rgba(255,255,255,.95);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: .75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,.15);
+            z-index: 500;
+            pointer-events: none;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e3a5f;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 4px;
+            color: #4a5568;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        #loading {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            font-size: .9rem;
+            color: #4a5568;
+            gap: 10px;
+        }
+
+            #loading.hidden {
+                display: none;
+            }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #1e3a5f;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #panel {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 500;
+            }
+
+                #panel.hidden {
+                    display: none;
+                }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <span class="logo">🌊</span>
-  <div>
-    <h1>AquaSafe</h1>
-    <p>Balneabilidade em tempo real - Região Vale do Itajaí</p>
-  </div>
-</header>
-
-<div id="rain-banner">
-  ⚠️ Chuva registrada nas últimas 24h na região. Qualidade da água pode estar afetada — consulte o status de cada praia antes de entrar no mar.
-</div>
-
-<div class="main">
-  <div id="map"></div>
-
-  <div class="legend">
-    <div class="legend-title">Balneabilidade</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria para banho</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Imprópria para banho</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> Sem dados</div>
-  </div>
-
-  <div id="panel" class="hidden">
-    <div class="panel-header">
-      <button class="close-btn" onclick="closePanel()">✕</button>
-      <h2 id="panel-name">—</h2>
-      <p id="panel-city">—</p>
-    </div>
-    <div class="panel-body">
-      <span id="panel-status" class="status-badge status-unknown">— Sem dados</span>
-
-      <div class="info-row">
-        <span>Última coleta</span>
-        <span id="panel-date">—</span>
-      </div>
-      <div class="info-row">
-        <span>Status IMA</span>
-        <span id="panel-raw">—</span>
-      </div>
-
-      <div class="history-title">Histórico de coletas</div>
-      <div id="panel-history">—</div>
-
-      <p style="font-size:.7rem;color:#94a3b8;margin-top:16px;line-height:1.5">
-        Fonte: <a href="https://balneabilidade.ima.sc.gov.br" target="_blank" style="color:#3b82f6">IMA/SC</a> · Resolução CONAMA nº 274/2000
-      </p>
-    </div>
-  </div>
-
-  <div id="loading">
-    <span class="spinner"></span>
-    Carregando dados de balneabilidade...
-  </div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-  const map = L.map('map', {
-    center: [-26.92, -48.64],
-    zoom: 11,
-    zoomControl: true
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 18
-  }).addTo(map);
-
-  const qualityColor = { Proper: '#10b981', Improper: '#ef4444', Unknown: '#94a3b8' };
-  const qualityLabel = { Proper: 'Própria para banho', Improper: 'Imprópria para banho', Unknown: 'Sem dados' };
-  const qualityClass = { Proper: 'status-proper', Improper: 'status-improper', Unknown: 'status-unknown' };
-
-  function markerOptions(quality) {
-    return {
-      radius: 10,
-      fillColor: qualityColor[quality] ?? '#94a3b8',
-      color: '#fff',
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.9
-    };
-  }
-
-  async function loadBeaches() {
-    try {
-      const res = await fetch('/api/beaches');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const beaches = await res.json();
-
-      beaches.forEach(b => {
-        const marker = L.circleMarker([b.latitude, b.longitude], markerOptions(b.quality))
-          .addTo(map)
-          .bindTooltip(b.name, { permanent: false, direction: 'top' })
-          .on('click', () => openPanel(b));
-      });
-    } catch (err) {
-      console.error('Erro ao carregar praias:', err);
-    } finally {
-      document.getElementById('loading').classList.add('hidden');
-    }
-  }
-
-  function openPanel(beach) {
-    document.getElementById('panel-name').textContent = beach.name;
-    document.getElementById('panel-city').textContent = beach.city;
-    document.getElementById('panel-date').textContent = beach.lastSampleDate;
-    document.getElementById('panel-raw').textContent  = beach.rawStatus;
-
-    const badge = document.getElementById('panel-status');
-    badge.textContent  = qualityLabel[beach.quality] ?? 'Sem dados';
-    badge.className    = `status-badge ${qualityClass[beach.quality] ?? 'status-unknown'}`;
-
-    loadHistory(beach.id);
-    document.getElementById('panel').classList.remove('hidden');
-  }
-
-  function closePanel() {
-    document.getElementById('panel').classList.add('hidden');
-  }
-
-  async function loadHistory(beachId) {
-    const container = document.getElementById('panel-history');
-    container.innerHTML = '<span style="color:#94a3b8;font-size:.8rem">Carregando...</span>';
-
-    try {
-      const res = await fetch(`/api/beaches/${beachId}/history`);
-      if (!res.ok) throw new Error();
-      const { samples } = await res.json();
-
-      container.innerHTML = samples.map(s => `
-        <div class="history-item">
-          <span class="dot dot-${s.quality.toLowerCase()}"></span>
-          <span style="flex:1">${s.date}</span>
-          <span style="color:${qualityColor[s.quality]};font-weight:500">${qualityLabel[s.quality]}</span>
+    <header>
+        <span class="logo">🌊</span>
+        <div>
+            <h1>AquaSafe</h1>
+            <p>Balneabilidade em tempo real - Itajaí e região</p>
         </div>
-      `).join('');
-    } catch {
-      container.innerHTML = '<span style="color:#94a3b8;font-size:.8rem">Histórico indisponível.</span>';
-    }
-  }
+    </header>
 
-  loadBeaches();
-</script>
+    <div id="rain-banner">
+        ⚠️ Chuva registrada nas últimas 24h na região. Qualidade da água pode estar afetada — consulte o status de cada praia antes de entrar no mar.
+    </div>
+
+    <div class="main">
+        <div id="map"></div>
+
+        <div class="legend">
+            <div class="legend-title">Balneabilidade</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria para banho</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Imprópria para banho</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> Sem dados</div>
+        </div>
+
+        <div id="panel" class="hidden">
+            <div class="panel-header">
+                <div>
+                    <h2 id="panel-name">—</h2>
+                    <p id="panel-city">—</p>
+                </div>
+                <button class="close-btn" onclick="closePanel()">✕</button>
+            </div>
+            <div class="panel-body">
+                <span id="panel-status" class="status-badge status-unknown">— Sem dados</span>
+
+                <div class="info-row">
+                    <span>Última coleta</span>
+                    <span id="panel-date">—</span>
+                </div>
+                <div class="info-row">
+                    <span>Status IMA</span>
+                    <span id="panel-raw">—</span>
+                </div>
+
+                <div class="history-title">Histórico de coletas</div>
+                <div id="panel-history">—</div>
+
+                <p style="font-size:.7rem;color:#94a3b8;margin-top:16px;line-height:1.5">
+                    Fonte: <a href="https://balneabilidade.ima.sc.gov.br" target="_blank" style="color:#3b82f6">IMA/SC</a> · Resolução CONAMA nº 274/2000
+                </p>
+            </div>
+        </div>
+
+        <div id="loading">
+            <span class="spinner"></span>
+            Carregando dados de balneabilidade...
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const REGION_BOUNDS = L.latLngBounds(
+            L.latLng(-27.08, -48.75),
+            L.latLng(-26.72, -48.55)
+        );
+
+        const map = L.map('map', {
+            center: [-26.92, -48.64],
+            zoom: 12,
+            minZoom: 12.5,
+            maxZoom: 14,
+            maxBounds: REGION_BOUNDS,
+            maxBoundsViscosity: 1.0,
+            zoomControl: true
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 17
+        }).addTo(map);
+
+        const qualityColor = { Proper: '#10b981', Improper: '#ef4444', Unknown: '#94a3b8' };
+        const qualityLabel = { Proper: 'Própria para banho', Improper: 'Imprópria para banho', Unknown: 'Sem dados' };
+        const qualityClass = { Proper: 'status-proper', Improper: 'status-improper', Unknown: 'status-unknown' };
+
+        function markerOptions(quality) {
+            return {
+                radius: 10,
+                fillColor: qualityColor[quality] ?? '#94a3b8',
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.9
+            };
+        }
+
+        async function loadBeaches() {
+            try {
+                const res = await fetch('/api/beaches');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const beaches = await res.json();
+
+                const markers = [];
+                beaches.forEach(b => {
+                    const marker = L.circleMarker([b.latitude, b.longitude], markerOptions(b.quality))
+                        .addTo(map)
+                        .bindTooltip(b.name, { permanent: false, direction: 'top' })
+                        .on('click', () => openPanel(b));
+                    markers.push(marker);
+                });
+
+                if (markers.length > 0) {
+                    const group = L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.15));
+                }
+            } catch (err) {
+                console.error('Erro ao carregar praias:', err);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function openPanel(beach) {
+            document.getElementById('panel-name').textContent = beach.name;
+            document.getElementById('panel-city').textContent = beach.city;
+            document.getElementById('panel-date').textContent = beach.lastSampleDate;
+            document.getElementById('panel-raw').textContent = beach.rawStatus;
+
+            const badge = document.getElementById('panel-status');
+            badge.textContent = qualityLabel[beach.quality] ?? 'Sem dados';
+            badge.className = `status-badge ${qualityClass[beach.quality] ?? 'status-unknown'}`;
+
+            loadHistory(beach.id);
+            document.getElementById('panel').classList.remove('hidden');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.add('hidden');
+        }
+
+        async function loadHistory(beachId) {
+            const container = document.getElementById('panel-history');
+            container.innerHTML = '<span style="color:#94a3b8;font-size:.8rem">Carregando...</span>';
+
+            try {
+                const res = await fetch(`/api/beaches/${beachId}/history`);
+                if (!res.ok) throw new Error();
+                const { samples } = await res.json();
+
+                container.innerHTML = samples.map(s => `
+                        <div class="history-item">
+                            <span class="dot dot-${s.quality.toLowerCase()}"></span>
+                            <span style="flex:1">${s.date}</span>
+                            <span style="color:${qualityColor[s.quality]};font-weight:500">${qualityLabel[s.quality]}</span>
+                        </div>
+                    `).join('');
+            } catch {
+                container.innerHTML = '<span style="color:#94a3b8;font-size:.8rem">Histórico indisponível.</span>';
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            map.fitBounds(REGION_BOUNDS);
+        });
+
+        loadBeaches();
+    </script>
 </body>
 </html>
