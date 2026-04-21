@@ -83,13 +83,83 @@
             border-left: 1px solid #e2e8f0;
             overflow-y: auto;
             flex-shrink: 0;
-            transition: transform .25s ease;
             z-index: 10;
         }
 
-            #panel.hidden {
-                transform: translateX(100%);
-            }
+        #panel-overview,
+        #panel-detail {
+            display: none;
+        }
+
+        #panel-overview.active,
+        #panel-detail.active {
+            display: block;
+        }
+
+        .overview-stats {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 10px 6px;
+            border-radius: 8px;
+            font-size: .7rem;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-number {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .stat-proper  { background: #d1fae5; color: #065f46; }
+        .stat-improper { background: #fee2e2; color: #991b1b; }
+
+        .city-group-title {
+            font-size: .72rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding: 10px 0 4px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .beach-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 4px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background .15s;
+        }
+
+        .beach-list-item:hover {
+            background: #f1f5f9;
+        }
+
+        .beach-list-item .dot {
+            flex-shrink: 0;
+        }
+
+        .beach-list-name {
+            flex: 1;
+            font-size: .78rem;
+            color: #1a202c;
+        }
+
+        .beach-list-status {
+            font-size: .68rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
 
         .panel-header {
             background: #f8fafc;
@@ -210,6 +280,17 @@
             background: #94a3b8;
         }
 
+        .data-source {
+            font-size: .7rem;
+            color: #94a3b8;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+            .data-source a {
+                color: #3b82f6;
+            }
+
         .legend {
             position: absolute;
             bottom: 30px;
@@ -242,6 +323,21 @@
             height: 12px;
             border-radius: 50%;
             flex-shrink: 0;
+        }
+
+        #data-badge {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30,58,95,.85);
+            color: #fff;
+            font-size: .7rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            z-index: 500;
+            pointer-events: none;
+            white-space: nowrap;
         }
 
         #loading {
@@ -282,12 +378,9 @@
                 right: 0;
                 top: 0;
                 bottom: 0;
+                width: 280px;
                 z-index: 500;
             }
-
-                #panel.hidden {
-                    display: none;
-                }
         }
     </style>
 </head>
@@ -297,50 +390,81 @@
         <span class="logo">🌊</span>
         <div>
             <h1>AquaSafe</h1>
-            <p>Balneabilidade em tempo real - Itajaí e região</p>
+            <p>Balneabilidade em tempo real — Itajaí e região</p>
         </div>
     </header>
 
     <div id="rain-banner">
-        ⚠️ Chuva registrada nas últimas 24h na região. Qualidade da água pode estar afetada — consulte o status de cada praia antes de entrar no mar.
+        ⚠️ <span id="rain-message"></span>
     </div>
 
     <div class="main">
         <div id="map"></div>
 
+        <div id="data-badge">Carregando dados...</div>
+
         <div class="legend">
             <div class="legend-title">Balneabilidade</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria para banho</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Imprópria para banho</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Imprópria</div>
             <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> Sem dados</div>
         </div>
 
-        <div id="panel" class="hidden">
-            <div class="panel-header">
-                <div>
-                    <h2 id="panel-name">—</h2>
-                    <p id="panel-city">—</p>
+        <div id="panel">
+            <div id="panel-overview" class="active">
+                <div class="panel-header">
+                    <div>
+                        <h2>Praias da Região</h2>
+                        <p>Selecione uma praia para detalhes</p>
+                    </div>
                 </div>
-                <button class="close-btn" onclick="closePanel()">✕</button>
+                <div class="panel-body">
+                    <div class="overview-stats">
+                        <div class="stat-card stat-proper">
+                            <span class="stat-number" id="stat-proper">-</span>
+                            Próprias
+                        </div>
+                        <div class="stat-card stat-improper">
+                            <span class="stat-number" id="stat-improper">-</span>
+                            Impróprias
+                        </div>
+                    </div>
+                    <div id="beach-list"></div>
+                    <p class="data-source">
+                        Fonte: <a href="https://balneabilidade.ima.sc.gov.br" target="_blank">IMA/SC</a>
+                        · Resolução CONAMA nº 274/2000
+                    </p>
+                </div>
             </div>
-            <div class="panel-body">
-                <span id="panel-status" class="status-badge status-unknown">— Sem dados</span>
 
-                <div class="info-row">
-                    <span>Última coleta</span>
-                    <span id="panel-date">—</span>
+            <div id="panel-detail">
+                <div class="panel-header">
+                    <div>
+                        <h2 id="panel-name">—</h2>
+                        <p id="panel-city">—</p>
+                    </div>
+                    <button class="close-btn" onclick="closePanel()">✕</button>
                 </div>
-                <div class="info-row">
-                    <span>Status IMA</span>
-                    <span id="panel-raw">—</span>
+                <div class="panel-body">
+                    <span id="panel-status" class="status-badge status-unknown">— Sem dados</span>
+
+                    <div class="info-row">
+                        <span>Última coleta</span>
+                        <span id="panel-date">—</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Status IMA</span>
+                        <span id="panel-raw">—</span>
+                    </div>
+
+                    <div class="history-title">Histórico de coletas</div>
+                    <div id="panel-history">—</div>
+
+                    <p class="data-source">
+                        Fonte: <a href="https://balneabilidade.ima.sc.gov.br" target="_blank">IMA/SC</a>
+                        · Resolução CONAMA nº 274/2000
+                    </p>
                 </div>
-
-                <div class="history-title">Histórico de coletas</div>
-                <div id="panel-history">—</div>
-
-                <p style="font-size:.7rem;color:#94a3b8;margin-top:16px;line-height:1.5">
-                    Fonte: <a href="https://balneabilidade.ima.sc.gov.br" target="_blank" style="color:#3b82f6">IMA/SC</a> · Resolução CONAMA nº 274/2000
-                </p>
             </div>
         </div>
 
@@ -361,11 +485,10 @@
         const map = L.map('map', {
             center: [-26.92, -48.64],
             zoom: 12,
-            minZoom: 12.5,
+            minZoom: 12,
             maxZoom: 14,
             maxBounds: REGION_BOUNDS,
-            maxBoundsViscosity: 1.0,
-            zoomControl: true
+            maxBoundsViscosity: 1.0
         });
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -373,9 +496,21 @@
             maxZoom: 17
         }).addTo(map);
 
-        const qualityColor = { Proper: '#10b981', Improper: '#ef4444', Unknown: '#94a3b8' };
-        const qualityLabel = { Proper: 'Própria para banho', Improper: 'Imprópria para banho', Unknown: 'Sem dados' };
-        const qualityClass = { Proper: 'status-proper', Improper: 'status-improper', Unknown: 'status-unknown' };
+        const qualityColor = {
+            Proper: '#10b981',
+            Improper: '#ef4444',
+            Unknown: '#94a3b8'
+        };
+        const qualityLabel = {
+            Proper: 'Própria para banho',
+            Improper: 'Imprópria para banho',
+            Unknown: 'Sem dados'
+        };
+        const qualityClass = {
+            Proper: 'status-proper',
+            Improper: 'status-improper',
+            Unknown: 'status-unknown'
+        };
 
         function markerOptions(quality) {
             return {
@@ -388,14 +523,22 @@
             };
         }
 
+        let allBeaches = [];
+
         async function loadBeaches() {
             try {
                 const res = await fetch('/api/beaches');
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const beaches = await res.json();
+                allBeaches = await res.json();
+
+                const hasRealData = allBeaches.some(b => b.quality !== 'Unknown');
+                document.getElementById('data-badge').textContent =
+                    hasRealData
+                        ? `✅ Dados IMA/SC — ${allBeaches.length} pontos`
+                        : `⚠️ Dados provisórios (${allBeaches.length} pontos)`;
 
                 const markers = [];
-                beaches.forEach(b => {
+                allBeaches.forEach(b => {
                     const marker = L.circleMarker([b.latitude, b.longitude], markerOptions(b.quality))
                         .addTo(map)
                         .bindTooltip(b.name, { permanent: false, direction: 'top' })
@@ -407,10 +550,72 @@
                     const group = L.featureGroup(markers);
                     map.fitBounds(group.getBounds().pad(0.15));
                 }
+
+                buildOverview(allBeaches);
             } catch (err) {
                 console.error('Erro ao carregar praias:', err);
+                document.getElementById('data-badge').textContent = '❌ Erro ao carregar dados';
             } finally {
                 document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function buildOverview(beaches) {
+            const proper = beaches.filter(b => b.quality === 'Proper').length;
+            const improper = beaches.filter(b => b.quality === 'Improper').length;
+            document.getElementById('stat-proper').textContent = proper;
+            document.getElementById('stat-improper').textContent = improper;
+
+            const byCity = {};
+            beaches.forEach(b => {
+                if (!byCity[b.city]) byCity[b.city] = [];
+                byCity[b.city].push(b);
+            });
+
+            const list = document.getElementById('beach-list');
+            list.innerHTML = '';
+
+            Object.keys(byCity).sort().forEach(city => {
+                const title = document.createElement('div');
+                title.className = 'city-group-title';
+                title.textContent = city;
+                list.appendChild(title);
+
+                byCity[city]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .forEach(b => {
+                        const item = document.createElement('div');
+                        item.className = 'beach-list-item';
+                        item.onclick = () => openPanel(b);
+
+                        const dotClass = b.quality === 'Proper' ? 'dot-proper'
+                            : b.quality === 'Improper' ? 'dot-improper' : 'dot-unknown';
+                        const statusText = b.quality === 'Proper' ? 'Própria'
+                            : b.quality === 'Improper' ? 'Imprópria' : 'Sem dados';
+                        const statusColor = qualityColor[b.quality] ?? '#94a3b8';
+
+                        item.innerHTML = `
+                            <span class="dot ${dotClass}"></span>
+                            <span class="beach-list-name">${b.name}</span>
+                            <span class="beach-list-status" style="color:${statusColor}">${statusText}</span>
+                        `;
+                        list.appendChild(item);
+                    });
+            });
+        }
+
+        async function loadRainAlert() {
+            try {
+                const res = await fetch('/api/weather/rain-alert');
+                if (!res.ok) return;
+                const { hasRecentRain, message } = await res.json();
+
+                if (hasRecentRain) {
+                    document.getElementById('rain-message').textContent = message;
+                    document.getElementById('rain-banner').classList.add('visible');
+                }
+            } catch (err) {
+                console.warn('Alerta de chuva indisponível:', err);
             }
         }
 
@@ -425,11 +630,14 @@
             badge.className = `status-badge ${qualityClass[beach.quality] ?? 'status-unknown'}`;
 
             loadHistory(beach.id);
-            document.getElementById('panel').classList.remove('hidden');
+
+            document.getElementById('panel-overview').classList.remove('active');
+            document.getElementById('panel-detail').classList.add('active');
         }
 
         function closePanel() {
-            document.getElementById('panel').classList.add('hidden');
+            document.getElementById('panel-detail').classList.remove('active');
+            document.getElementById('panel-overview').classList.add('active');
         }
 
         async function loadHistory(beachId) {
@@ -442,22 +650,21 @@
                 const { samples } = await res.json();
 
                 container.innerHTML = samples.map(s => `
-                        <div class="history-item">
-                            <span class="dot dot-${s.quality.toLowerCase()}"></span>
-                            <span style="flex:1">${s.date}</span>
-                            <span style="color:${qualityColor[s.quality]};font-weight:500">${qualityLabel[s.quality]}</span>
-                        </div>
-                    `).join('');
+                    <div class="history-item">
+                        <span class="dot dot-${s.quality.toLowerCase()}"></span>
+                        <span style="flex:1">${s.date}</span>
+                        <span style="color:${qualityColor[s.quality]};font-weight:500">
+                            ${qualityLabel[s.quality]}
+                        </span>
+                    </div>
+                `).join('');
             } catch {
                 container.innerHTML = '<span style="color:#94a3b8;font-size:.8rem">Histórico indisponível.</span>';
             }
         }
 
-        window.addEventListener('resize', () => {
-            map.fitBounds(REGION_BOUNDS);
-        });
-
         loadBeaches();
+        loadRainAlert();
     </script>
 </body>
 </html>

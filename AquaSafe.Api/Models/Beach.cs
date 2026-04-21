@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace AquaSafe.Api.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum WaterQuality
 {
     Proper,

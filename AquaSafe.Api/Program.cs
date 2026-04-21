@@ -5,9 +5,6 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient<ImaService>();
-builder.Services.AddScoped<ImaService>();
-
 builder.Services.AddCors(opts =>
     opts.AddDefaultPolicy(p =>
         p.AllowAnyOrigin()
@@ -15,6 +12,20 @@ builder.Services.AddCors(opts =>
          .AllowAnyHeader()));
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddHttpClient<ImaService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add(
+        "User-Agent",
+        "AquaSafe/2.0 (github.com/GUISLOTTI/AquaSafe; monitoramento balneabilidade SC)");
+});
+
+builder.Services.AddHttpClient<WeatherService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+    client.DefaultRequestHeaders.Add("User-Agent", "AquaSafe/2.0");
+});
 
 var app = builder.Build();
 
@@ -30,5 +41,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapBeachEndpoints();
 app.MapHealthEndpoints();
+app.MapWeatherEndpoints();
 
 app.Run();
