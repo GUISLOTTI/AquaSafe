@@ -372,14 +372,57 @@
             }
         }
 
+        #mobile-toggle {
+            display: none;
+        }
+
         @media (max-width: 600px) {
             #panel {
                 position: absolute;
                 right: 0;
                 top: 0;
                 bottom: 0;
-                width: 280px;
+                width: 85%;
+                max-width: 320px;
                 z-index: 500;
+                transform: translateX(100%);
+                transition: transform .3s ease;
+                box-shadow: -4px 0 16px rgba(0,0,0,.2);
+            }
+
+            #panel.mobile-open {
+                transform: translateX(0);
+            }
+
+            #mobile-toggle {
+                display: flex;
+                position: absolute;
+                bottom: 20px;
+                right: 16px;
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background: #1e3a5f;
+                color: #fff;
+                border: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4rem;
+                box-shadow: 0 3px 10px rgba(0,0,0,.3);
+                z-index: 600;
+                cursor: pointer;
+                transition: transform .2s ease;
+            }
+
+            #mobile-toggle:active {
+                transform: scale(.92);
+            }
+
+            .legend {
+                font-size: .7rem;
+                padding: 8px 10px;
+                bottom: 16px;
+                left: 8px;
             }
         }
     </style>
@@ -467,6 +510,10 @@
                 </div>
             </div>
         </div>
+
+        <button id="mobile-toggle" onclick="toggleMobilePanel()" aria-label="Abrir lista de praias">
+            <span id="mobile-toggle-icon">📋</span>
+        </button>
 
         <div id="loading">
             <span class="spinner"></span>
@@ -633,11 +680,30 @@
 
             document.getElementById('panel-overview').classList.remove('active');
             document.getElementById('panel-detail').classList.add('active');
+
+            setMobilePanel(true);
         }
 
         function closePanel() {
             document.getElementById('panel-detail').classList.remove('active');
             document.getElementById('panel-overview').classList.add('active');
+        }
+
+        function setMobilePanel(open) {
+            const panel = document.getElementById('panel');
+            const icon = document.getElementById('mobile-toggle-icon');
+            if (open) {
+                panel.classList.add('mobile-open');
+                icon.textContent = '✕';
+            } else {
+                panel.classList.remove('mobile-open');
+                icon.textContent = '📋';
+            }
+        }
+
+        function toggleMobilePanel() {
+            const panel = document.getElementById('panel');
+            setMobilePanel(!panel.classList.contains('mobile-open'));
         }
 
         async function loadHistory(beachId) {
