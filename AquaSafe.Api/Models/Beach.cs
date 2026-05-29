@@ -35,5 +35,15 @@ public sealed record SampleEntry(
 
 public sealed record RainAlert(
     bool   HasRecentRain,
-    string Message
+    string Message,
+    double PrecipitationMm,
+    string Level,
+    string Condition,
+    string ConditionLabel
+);
+
+public sealed record CityCondition(
+    string Condition,
+    string ConditionLabel,
+    double PrecipitationMm
 );

@@ -203,15 +203,15 @@
             padding: 14px 16px;
         }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: .8rem;
+        .status-hero {
+            display: block;
+            text-align: center;
+            padding: 14px 12px;
+            border-radius: 10px;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 14px;
+            letter-spacing: .01em;
+            margin-bottom: 4px;
         }
 
         .status-proper {
@@ -376,6 +376,229 @@
             display: none;
         }
 
+        header .header-text {
+            flex: 1;
+        }
+
+        #clock {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            border-radius: 22px;
+            padding: 6px 14px 6px 11px;
+            line-height: 1.15;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        #clock .clock-icon {
+            font-size: 1.05rem;
+            opacity: .9;
+        }
+
+        #clock .clock-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #clock .clock-time {
+            font-size: .95rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+        }
+
+        #clock .clock-date {
+            font-size: .68rem;
+            opacity: .8;
+            text-transform: capitalize;
+        }
+
+        .nearby-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 9px 12px;
+            background: #f1f5f9;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e0;
+            border-radius: 8px;
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: not-allowed;
+            margin-bottom: 14px;
+        }
+
+        .nearby-btn small {
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            background: #e2e8f0;
+            color: #64748b;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .favorites-section {
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .favorites-title {
+            font-size: .72rem;
+            font-weight: 600;
+            color: #b45309;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            padding-bottom: 6px;
+        }
+
+        .fav-star {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+            padding: 0 4px;
+            color: #94a3b8;
+            flex-shrink: 0;
+            transition: color .15s, transform .15s;
+        }
+
+        .fav-star.active {
+            color: #f59e0b;
+        }
+
+        .fav-star:hover {
+            color: #f59e0b;
+            transform: scale(1.12);
+        }
+
+        #panel-fav {
+            font-size: 1.35rem;
+        }
+
+        .panel-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .panel-header p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .panel-weather {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #eef2f7;
+            color: #475569;
+            border-radius: 12px;
+            padding: 2px 9px;
+            font-size: .7rem;
+            font-weight: 500;
+        }
+
+        .panel-weather .weather-icon {
+            font-size: .9rem;
+            line-height: 1;
+        }
+
+        .marine-section {
+            margin-top: 18px;
+        }
+
+        .marine-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .marine-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+            opacity: .75;
+        }
+
+        .marine-card .marine-icon {
+            font-size: 1.1rem;
+        }
+
+        .marine-card .marine-label {
+            display: block;
+            font-size: .72rem;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .marine-card .marine-value {
+            display: block;
+            font-size: .9rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .placeholder-badge {
+            display: inline-block;
+            font-size: .62rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 2px 7px;
+            border-radius: 10px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .camera-card {
+            margin-top: 18px;
+            background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
+            border: 1px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 32px 16px;
+            text-align: center;
+            color: #64748b;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .camera-card .cam-icon {
+            font-size: 2.6rem;
+            opacity: .55;
+            line-height: 1;
+        }
+
+        .camera-card .cam-title {
+            font-size: .95rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .camera-card .cam-sub {
+            font-size: .78rem;
+            color: #94a3b8;
+            max-width: 220px;
+        }
+
         @media (max-width: 600px) {
             #panel {
                 position: absolute;
@@ -424,6 +647,31 @@
                 bottom: 16px;
                 left: 8px;
             }
+
+            header h1 {
+                font-size: 1rem;
+            }
+
+            header p {
+                display: none;
+            }
+
+            #clock {
+                padding: 5px 10px 5px 9px;
+                gap: 7px;
+            }
+
+            #clock .clock-icon {
+                font-size: .95rem;
+            }
+
+            #clock .clock-time {
+                font-size: .85rem;
+            }
+
+            #clock .clock-date {
+                font-size: .62rem;
+            }
         }
     </style>
 </head>
@@ -431,9 +679,16 @@
 
     <header>
         <span class="logo">🌊</span>
-        <div>
+        <div class="header-text">
             <h1>AquaSafe</h1>
             <p>Balneabilidade em tempo real — Itajaí e região</p>
+        </div>
+        <div id="clock" aria-label="Hora de Brasília">
+            <span class="clock-icon">🕒</span>
+            <div class="clock-stack">
+                <span class="clock-time" id="clock-time">--:--</span>
+                <span class="clock-date" id="clock-date">—</span>
+            </div>
         </div>
     </header>
 
@@ -450,7 +705,6 @@
             <div class="legend-title">Balneabilidade</div>
             <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Própria</div>
             <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Imprópria</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span> Sem dados</div>
         </div>
 
         <div id="panel">
@@ -462,6 +716,16 @@
                     </div>
                 </div>
                 <div class="panel-body">
+                    <button class="nearby-btn" type="button" disabled
+                            title="Funcionalidade prevista para a próxima etapa">
+                        📍 Próximas a mim <small>em breve</small>
+                    </button>
+
+                    <div id="favorites-section" class="favorites-section" hidden>
+                        <div class="favorites-title">★ Suas favoritas</div>
+                        <div id="favorites-list"></div>
+                    </div>
+
                     <div class="overview-stats">
                         <div class="stat-card stat-proper">
                             <span class="stat-number" id="stat-proper">-</span>
@@ -484,20 +748,57 @@
                 <div class="panel-header">
                     <div>
                         <h2 id="panel-name">—</h2>
-                        <p id="panel-city">—</p>
+                        <p id="panel-city">
+                            <span id="panel-city-name">—</span>
+                            <span id="panel-weather" class="panel-weather" hidden>
+                                <span class="weather-icon"></span>
+                                <span class="weather-label"></span>
+                            </span>
+                        </p>
                     </div>
-                    <button class="close-btn" onclick="closePanel()">✕</button>
+                    <div class="panel-header-actions">
+                        <button id="panel-fav" class="fav-star" type="button"
+                                title="Favoritar esta praia" aria-label="Favoritar">☆</button>
+                        <button class="close-btn" onclick="closePanel()">✕</button>
+                    </div>
                 </div>
                 <div class="panel-body">
-                    <span id="panel-status" class="status-badge status-unknown">— Sem dados</span>
+                    <div id="panel-status" class="status-hero status-unknown">— Sem dados</div>
 
-                    <div class="info-row">
-                        <span>Última coleta</span>
-                        <span id="panel-date">—</span>
+                    <div class="marine-section">
+                        <div class="history-title">
+                            Condições marinhas
+                            <span class="placeholder-badge">em breve</span>
+                        </div>
+                        <div class="marine-grid">
+                            <div class="marine-card">
+                                <span class="marine-icon">🌊</span>
+                                <span class="marine-label">Ondas</span>
+                                <span class="marine-value">—</span>
+                            </div>
+                            <div class="marine-card">
+                                <span class="marine-icon">🌡️</span>
+                                <span class="marine-label">Temp. água</span>
+                                <span class="marine-value">—</span>
+                            </div>
+                            <div class="marine-card">
+                                <span class="marine-icon">🌀</span>
+                                <span class="marine-label">Maré</span>
+                                <span class="marine-value">—</span>
+                            </div>
+                            <div class="marine-card">
+                                <span class="marine-icon">☀️</span>
+                                <span class="marine-label">UV</span>
+                                <span class="marine-value">—</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="info-row">
-                        <span>Status IMA</span>
-                        <span id="panel-raw">—</span>
+
+                    <div class="camera-card">
+                        <span class="cam-icon">📹</span>
+                        <div class="cam-title">Câmera ao vivo</div>
+                        <div class="cam-sub">Visualize as condições da praia em tempo real</div>
+                        <span class="placeholder-badge">em breve</span>
                     </div>
 
                     <div class="history-title">Histórico de coletas</div>
@@ -572,6 +873,57 @@
 
         let allBeaches = [];
 
+        const FAV_KEY = 'aquasafe:favorites';
+
+        function getFavorites() {
+            try {
+                return JSON.parse(localStorage.getItem(FAV_KEY)) ?? [];
+            } catch {
+                return [];
+            }
+        }
+
+        function isFavorite(id) {
+            return getFavorites().includes(id);
+        }
+
+        function toggleFavorite(id) {
+            const favs = getFavorites();
+            const i = favs.indexOf(id);
+            if (i >= 0) favs.splice(i, 1);
+            else favs.push(id);
+            localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+        }
+
+        function makeBeachItem(b) {
+            const item = document.createElement('div');
+            item.className = 'beach-list-item';
+
+            const dotClass = b.quality === 'Proper' ? 'dot-proper'
+                : b.quality === 'Improper' ? 'dot-improper' : 'dot-unknown';
+            const statusText = b.quality === 'Proper' ? 'Própria'
+                : b.quality === 'Improper' ? 'Imprópria' : 'Sem dados';
+            const statusColor = qualityColor[b.quality] ?? '#94a3b8';
+            const star = isFavorite(b.id) ? '★' : '☆';
+            const starClass = isFavorite(b.id) ? 'fav-star active' : 'fav-star';
+
+            item.innerHTML = `
+                <button class="${starClass}" aria-label="Favoritar">${star}</button>
+                <span class="dot ${dotClass}"></span>
+                <span class="beach-list-name">${b.name}</span>
+                <span class="beach-list-status" style="color:${statusColor}">${statusText}</span>
+            `;
+
+            item.querySelector('.fav-star').addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(b.id);
+                buildOverview(allBeaches);
+            });
+            item.addEventListener('click', () => openPanel(b));
+
+            return item;
+        }
+
         async function loadBeaches() {
             try {
                 const res = await fetch('/api/beaches');
@@ -613,6 +965,21 @@
             document.getElementById('stat-proper').textContent = proper;
             document.getElementById('stat-improper').textContent = improper;
 
+            const favs = getFavorites();
+            const favSection = document.getElementById('favorites-section');
+            const favList = document.getElementById('favorites-list');
+            const favBeaches = beaches.filter(b => favs.includes(b.id));
+
+            if (favBeaches.length > 0) {
+                favList.innerHTML = '';
+                favBeaches
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .forEach(b => favList.appendChild(makeBeachItem(b)));
+                favSection.hidden = false;
+            } else {
+                favSection.hidden = true;
+            }
+
             const byCity = {};
             beaches.forEach(b => {
                 if (!byCity[b.city]) byCity[b.city] = [];
@@ -630,33 +997,26 @@
 
                 byCity[city]
                     .sort((a, b) => a.name.localeCompare(b.name))
-                    .forEach(b => {
-                        const item = document.createElement('div');
-                        item.className = 'beach-list-item';
-                        item.onclick = () => openPanel(b);
-
-                        const dotClass = b.quality === 'Proper' ? 'dot-proper'
-                            : b.quality === 'Improper' ? 'dot-improper' : 'dot-unknown';
-                        const statusText = b.quality === 'Proper' ? 'Própria'
-                            : b.quality === 'Improper' ? 'Imprópria' : 'Sem dados';
-                        const statusColor = qualityColor[b.quality] ?? '#94a3b8';
-
-                        item.innerHTML = `
-                            <span class="dot ${dotClass}"></span>
-                            <span class="beach-list-name">${b.name}</span>
-                            <span class="beach-list-status" style="color:${statusColor}">${statusText}</span>
-                        `;
-                        list.appendChild(item);
-                    });
+                    .forEach(b => list.appendChild(makeBeachItem(b)));
             });
         }
+
+        const conditionIcons = {
+            clear: '☀️',
+            partly_cloudy: '⛅',
+            cloudy: '☁️',
+            fog: '🌫️',
+            light_rain: '🌦️',
+            rain: '🌧️',
+            heavy_rain: '⛈️',
+            unknown: '❔'
+        };
 
         async function loadRainAlert() {
             try {
                 const res = await fetch('/api/weather/rain-alert');
                 if (!res.ok) return;
                 const { hasRecentRain, message } = await res.json();
-
                 if (hasRecentRain) {
                     document.getElementById('rain-message').textContent = message;
                     document.getElementById('rain-banner').classList.add('visible');
@@ -666,15 +1026,47 @@
             }
         }
 
+        function tickClock() {
+            const tz = 'America/Sao_Paulo';
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-BR', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
+            const wd = now.toLocaleDateString('pt-BR', { timeZone: tz, weekday: 'short' }).replace('.', '').replace('-feira', '');
+            const day = now.toLocaleDateString('pt-BR', { timeZone: tz, day: '2-digit' });
+            const mo = now.toLocaleDateString('pt-BR', { timeZone: tz, month: 'short' }).replace('.', '');
+            document.getElementById('clock-time').textContent = time;
+            document.getElementById('clock-date').textContent = `${wd}, ${day} ${mo}`;
+        }
+
         function openPanel(beach) {
             document.getElementById('panel-name').textContent = beach.name;
-            document.getElementById('panel-city').textContent = beach.city;
-            document.getElementById('panel-date').textContent = beach.lastSampleDate;
-            document.getElementById('panel-raw').textContent = beach.rawStatus;
+            document.getElementById('panel-city-name').textContent = beach.city;
+
+            const weather = cityWeather[beach.city];
+            const weatherEl = document.getElementById('panel-weather');
+            if (weather && weather.condition && weather.condition !== 'unknown') {
+                weatherEl.querySelector('.weather-icon').textContent = conditionIcons[weather.condition] ?? '❔';
+                weatherEl.querySelector('.weather-label').textContent = weather.conditionLabel;
+                weatherEl.hidden = false;
+            } else {
+                weatherEl.hidden = true;
+            }
 
             const badge = document.getElementById('panel-status');
             badge.textContent = qualityLabel[beach.quality] ?? 'Sem dados';
-            badge.className = `status-badge ${qualityClass[beach.quality] ?? 'status-unknown'}`;
+            badge.className = `status-hero ${qualityClass[beach.quality] ?? 'status-unknown'}`;
+
+            const star = document.getElementById('panel-fav');
+            const refreshStar = () => {
+                const fav = isFavorite(beach.id);
+                star.textContent = fav ? '★' : '☆';
+                star.classList.toggle('active', fav);
+            };
+            refreshStar();
+            star.onclick = () => {
+                toggleFavorite(beach.id);
+                refreshStar();
+                buildOverview(allBeaches);
+            };
 
             loadHistory(beach.id);
 
@@ -729,8 +1121,24 @@
             }
         }
 
+        let cityWeather = {};
+
+        async function loadCityWeather() {
+            try {
+                const res = await fetch('/api/weather/cities');
+                if (!res.ok) return;
+                cityWeather = await res.json();
+            } catch (err) {
+                console.warn('Tempo por cidade indisponível:', err);
+            }
+        }
+
+        tickClock();
+        setInterval(tickClock, 30000);
+
         loadBeaches();
         loadRainAlert();
+        loadCityWeather();
     </script>
 </body>
 </html>

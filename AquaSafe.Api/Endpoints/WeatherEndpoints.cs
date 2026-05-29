@@ -17,5 +17,13 @@ public static class WeatherEndpoints
         })
         .WithSummary("Alerta de chuva recente")
         .WithDescription("Verifica precipitação nas últimas 24h via Open-Meteo. Limiar >= 5mm. Cache de 1h.");
+
+        group.MapGet("/cities", async (WeatherService svc, CancellationToken ct) =>
+        {
+            var conditions = await svc.GetCityConditionsAsync(ct);
+            return Results.Ok(conditions);
+        })
+        .WithSummary("Condição climática por cidade")
+        .WithDescription("Retorna o tempo atual (Open-Meteo) para cada um dos quatro municípios monitorados. Cache de 1h.");
     }
 }
