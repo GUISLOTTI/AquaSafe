@@ -47,3 +47,20 @@ public sealed record CityCondition(
     string ConditionLabel,
     double PrecipitationMm
 );
+
+public sealed record MarineCondition(
+    double? WaveHeightM,
+    double? WavePeriodS,
+    double? WaveDirectionDeg,
+    double? SeaTemperatureC,
+    double? TidalHeightM,
+    double? UvIndex
+);
+
+public sealed record CameraInfo(
+    string  Source,
+    string? EmbedUrl,
+    string? ThumbnailUrl,
+    string? ExternalUrl,
+    string? Title
+);

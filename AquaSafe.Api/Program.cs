@@ -27,6 +27,18 @@ builder.Services.AddHttpClient<WeatherService>(client =>
     client.DefaultRequestHeaders.Add("User-Agent", "AquaSafe/2.0");
 });
 
+builder.Services.AddHttpClient<MarineService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+    client.DefaultRequestHeaders.Add("User-Agent", "AquaSafe/2.0");
+});
+
+builder.Services.AddHttpClient<CameraService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+    client.DefaultRequestHeaders.Add("User-Agent", "AquaSafe/2.0");
+});
+
 var app = builder.Build();
 
 app.UseCors();
@@ -42,5 +54,7 @@ if (app.Environment.IsDevelopment())
 app.MapBeachEndpoints();
 app.MapHealthEndpoints();
 app.MapWeatherEndpoints();
+app.MapMarineEndpoints();
+app.MapCameraEndpoints();
 
 app.Run();

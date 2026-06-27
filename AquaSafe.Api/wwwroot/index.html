@@ -423,24 +423,59 @@
             gap: 6px;
             width: 100%;
             padding: 9px 12px;
-            background: #f1f5f9;
-            color: #94a3b8;
-            border: 1px dashed #cbd5e0;
+            background: #1e3a5f;
+            color: #fff;
+            border: none;
             border-radius: 8px;
-            font-size: .8rem;
+            font-size: .82rem;
             font-weight: 500;
-            cursor: not-allowed;
+            cursor: pointer;
             margin-bottom: 14px;
+            transition: background .15s;
         }
 
-        .nearby-btn small {
-            font-size: .65rem;
+        .nearby-btn:hover {
+            background: #2c4a72;
+        }
+
+        .nearby-btn:disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .nearby-section {
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nearby-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .72rem;
+            font-weight: 600;
+            color: #1e3a5f;
             text-transform: uppercase;
             letter-spacing: .04em;
-            background: #e2e8f0;
+            padding-bottom: 6px;
+        }
+
+        .nearby-clear {
+            background: none;
+            border: none;
             color: #64748b;
-            padding: 2px 6px;
-            border-radius: 10px;
+            cursor: pointer;
+            font-size: .75rem;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .beach-list-item .dist {
+            font-size: .68rem;
+            color: #64748b;
+            margin-left: 4px;
         }
 
         .favorites-section {
@@ -530,7 +565,6 @@
             border-radius: 8px;
             padding: 10px 8px;
             text-align: center;
-            opacity: .75;
         }
 
         .marine-card .marine-icon {
@@ -547,8 +581,23 @@
 
         .marine-card .marine-value {
             display: block;
-            font-size: .9rem;
+            font-size: .95rem;
+            color: #1e3a5f;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .marine-card .marine-sub {
+            display: block;
+            font-size: .62rem;
             color: #94a3b8;
+            margin-top: 1px;
+        }
+
+        .marine-tide-note {
+            font-size: .65rem;
+            color: #94a3b8;
+            text-align: right;
             margin-top: 4px;
         }
 
@@ -567,15 +616,22 @@
 
         .camera-card {
             margin-top: 18px;
-            background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
-            border: 1px dashed #cbd5e0;
+            background: #0f172a;
             border-radius: 10px;
-            padding: 32px 16px;
-            text-align: center;
-            color: #64748b;
+            overflow: hidden;
+            color: #cbd5e0;
             min-height: 180px;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        .camera-card.empty {
+            background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
+            border: 1px dashed #cbd5e0;
+            color: #64748b;
+            padding: 32px 16px;
+            text-align: center;
             align-items: center;
             justify-content: center;
             gap: 6px;
@@ -597,6 +653,62 @@
             font-size: .78rem;
             color: #94a3b8;
             max-width: 220px;
+        }
+
+        .camera-iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 0;
+            display: block;
+        }
+
+        .camera-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .camera-caption {
+            padding: 8px 12px;
+            background: #1e293b;
+            font-size: .75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .camera-caption a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        .camera-search {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            text-align: center;
+            min-height: 180px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: #cbd5e0;
+            gap: 8px;
+        }
+
+        .camera-search-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #2563eb;
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            margin-top: 4px;
         }
 
         @media (max-width: 600px) {
@@ -716,10 +828,17 @@
                     </div>
                 </div>
                 <div class="panel-body">
-                    <button class="nearby-btn" type="button" disabled
-                            title="Funcionalidade prevista para a próxima etapa">
-                        📍 Próximas a mim <small>em breve</small>
+                    <button id="nearby-btn" class="nearby-btn" type="button" onclick="findNearby()">
+                        📍 Próximas a mim
                     </button>
+
+                    <div id="nearby-section" class="nearby-section" hidden>
+                        <div class="nearby-title">
+                            <span>📍 Mais próximas de você</span>
+                            <button class="nearby-clear" type="button" onclick="clearNearby()">limpar</button>
+                        </div>
+                        <div id="nearby-list"></div>
+                    </div>
 
                     <div id="favorites-section" class="favorites-section" hidden>
                         <div class="favorites-title">★ Suas favoritas</div>
@@ -766,39 +885,38 @@
                     <div id="panel-status" class="status-hero status-unknown">— Sem dados</div>
 
                     <div class="marine-section">
-                        <div class="history-title">
-                            Condições marinhas
-                            <span class="placeholder-badge">em breve</span>
-                        </div>
+                        <div class="history-title">Condições marinhas</div>
                         <div class="marine-grid">
                             <div class="marine-card">
                                 <span class="marine-icon">🌊</span>
                                 <span class="marine-label">Ondas</span>
-                                <span class="marine-value">—</span>
+                                <span class="marine-value" id="marine-wave">—</span>
+                                <span class="marine-sub" id="marine-wave-sub"></span>
                             </div>
                             <div class="marine-card">
                                 <span class="marine-icon">🌡️</span>
                                 <span class="marine-label">Temp. água</span>
-                                <span class="marine-value">—</span>
+                                <span class="marine-value" id="marine-temp">—</span>
                             </div>
                             <div class="marine-card">
                                 <span class="marine-icon">🌀</span>
                                 <span class="marine-label">Maré</span>
-                                <span class="marine-value">—</span>
+                                <span class="marine-value" id="marine-tide">—</span>
                             </div>
                             <div class="marine-card">
                                 <span class="marine-icon">☀️</span>
                                 <span class="marine-label">UV</span>
-                                <span class="marine-value">—</span>
+                                <span class="marine-value" id="marine-uv">—</span>
+                                <span class="marine-sub" id="marine-uv-sub"></span>
                             </div>
                         </div>
+                        <div class="marine-tide-note">Maré relativa ao nível médio do mar (Open-Meteo, aproximada).</div>
                     </div>
 
-                    <div class="camera-card">
+                    <div id="camera-card" class="camera-card empty">
                         <span class="cam-icon">📹</span>
                         <div class="cam-title">Câmera ao vivo</div>
-                        <div class="cam-sub">Visualize as condições da praia em tempo real</div>
-                        <span class="placeholder-badge">em breve</span>
+                        <div class="cam-sub">Carregando...</div>
                     </div>
 
                     <div class="history-title">Histórico de coletas</div>
@@ -1068,12 +1186,189 @@
                 buildOverview(allBeaches);
             };
 
+            fillMarine(beach.city);
+            loadCamera(beach.id);
             loadHistory(beach.id);
 
             document.getElementById('panel-overview').classList.remove('active');
             document.getElementById('panel-detail').classList.add('active');
 
             setMobilePanel(true);
+        }
+
+        function fillMarine(city) {
+            const m = cityMarine[city];
+            const wave = document.getElementById('marine-wave');
+            const waveSub = document.getElementById('marine-wave-sub');
+            const temp = document.getElementById('marine-temp');
+            const tide = document.getElementById('marine-tide');
+            const uv = document.getElementById('marine-uv');
+            const uvSub = document.getElementById('marine-uv-sub');
+
+            if (!m) {
+                wave.textContent = temp.textContent = tide.textContent = uv.textContent = '—';
+                waveSub.textContent = uvSub.textContent = '';
+                return;
+            }
+
+            wave.textContent = m.waveHeightM != null ? `${m.waveHeightM.toLocaleString('pt-BR')} m` : '—';
+            waveSub.textContent = m.wavePeriodS != null ? `período ${m.wavePeriodS.toLocaleString('pt-BR')} s` : '';
+            temp.textContent = m.seaTemperatureC != null ? `${m.seaTemperatureC.toLocaleString('pt-BR')} °C` : '—';
+            tide.textContent = m.tidalHeightM != null ? `${m.tidalHeightM.toLocaleString('pt-BR')} m` : '—';
+
+            if (m.uvIndex != null) {
+                uv.textContent = m.uvIndex.toLocaleString('pt-BR');
+                uvSub.textContent = uvCategoryLabel(m.uvIndex);
+            } else {
+                uv.textContent = '—';
+                uvSub.textContent = '';
+            }
+        }
+
+        function uvCategoryLabel(uv) {
+            if (uv < 3) return 'baixo';
+            if (uv < 6) return 'moderado';
+            if (uv < 8) return 'alto';
+            if (uv < 11) return 'muito alto';
+            return 'extremo';
+        }
+
+        async function loadCamera(beachId) {
+            const card = document.getElementById('camera-card');
+            card.className = 'camera-card empty';
+            card.innerHTML = `
+                <span class="cam-icon">📹</span>
+                <div class="cam-title">Câmera ao vivo</div>
+                <div class="cam-sub">Carregando...</div>
+            `;
+
+            try {
+                const res = await fetch(`/api/cameras/${beachId}`);
+                if (!res.ok) throw new Error();
+                const cam = await res.json();
+                renderCamera(cam);
+            } catch {
+                card.innerHTML = `
+                    <span class="cam-icon">📹</span>
+                    <div class="cam-title">Câmera indisponível</div>
+                    <div class="cam-sub">Não foi possível carregar a transmissão.</div>
+                `;
+            }
+        }
+
+        function renderCamera(cam) {
+            const card = document.getElementById('camera-card');
+
+            if (cam.source === 'windy' && cam.embedUrl) {
+                card.className = 'camera-card';
+                card.innerHTML = `
+                    <iframe class="camera-iframe" src="${cam.embedUrl}" allow="fullscreen" loading="lazy"></iframe>
+                    <div class="camera-caption">
+                        <span>${cam.title ?? 'Câmera ao vivo'}</span>
+                        <a href="${cam.externalUrl}" target="_blank" rel="noopener">abrir</a>
+                    </div>
+                `;
+                return;
+            }
+
+            if (cam.source === 'search' && cam.externalUrl) {
+                card.className = 'camera-card';
+                card.innerHTML = `
+                    <div class="camera-search">
+                        <span class="cam-icon">📹</span>
+                        <div class="cam-title" style="color:#e2e8f0">Transmissões ao vivo no YouTube</div>
+                        <div style="font-size:.78rem;color:#94a3b8;max-width:240px">
+                            Câmera direta indisponível para esta praia. Veja transmissões públicas relacionadas:
+                        </div>
+                        <a class="camera-search-link" href="${cam.externalUrl}" target="_blank" rel="noopener">
+                            ▶ Ver no YouTube
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            card.className = 'camera-card empty';
+            card.innerHTML = `
+                <span class="cam-icon">📹</span>
+                <div class="cam-title">Câmera indisponível</div>
+                <div class="cam-sub">Sem transmissão para esta praia no momento.</div>
+            `;
+        }
+
+        let cityMarine = {};
+
+        async function loadCityMarine() {
+            try {
+                const res = await fetch('/api/marine/cities');
+                if (!res.ok) return;
+                cityMarine = await res.json();
+            } catch (err) {
+                console.warn('Condições marinhas indisponíveis:', err);
+            }
+        }
+
+        function haversineKm(lat1, lng1, lat2, lng2) {
+            const R = 6371;
+            const toRad = d => d * Math.PI / 180;
+            const dLat = toRad(lat2 - lat1);
+            const dLng = toRad(lng2 - lng1);
+            const a = Math.sin(dLat / 2) ** 2 +
+                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                      Math.sin(dLng / 2) ** 2;
+            return 2 * R * Math.asin(Math.sqrt(a));
+        }
+
+        function findNearby() {
+            const btn = document.getElementById('nearby-btn');
+            if (!navigator.geolocation) {
+                alert('Seu navegador não oferece geolocalização.');
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = '⏳ Localizando...';
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    showNearby(pos.coords.latitude, pos.coords.longitude);
+                    btn.disabled = false;
+                    btn.textContent = '📍 Próximas a mim';
+                },
+                err => {
+                    btn.disabled = false;
+                    btn.textContent = '📍 Próximas a mim';
+                    const msg = err.code === 1
+                        ? 'Permissão de localização negada. Habilite o acesso nas configurações do navegador.'
+                        : 'Não foi possível obter sua localização.';
+                    alert(msg);
+                },
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+            );
+        }
+
+        function showNearby(lat, lng) {
+            const withDist = allBeaches
+                .map(b => ({ ...b, distKm: haversineKm(lat, lng, b.latitude, b.longitude) }))
+                .sort((a, b) => a.distKm - b.distKm)
+                .slice(0, 5);
+
+            const list = document.getElementById('nearby-list');
+            list.innerHTML = '';
+            withDist.forEach(b => {
+                const item = makeBeachItem(b);
+                const distSpan = document.createElement('span');
+                distSpan.className = 'dist';
+                distSpan.textContent = b.distKm < 1
+                    ? `${Math.round(b.distKm * 1000)} m`
+                    : `${b.distKm.toFixed(1)} km`;
+                item.querySelector('.beach-list-name').appendChild(distSpan);
+                list.appendChild(item);
+            });
+            document.getElementById('nearby-section').hidden = false;
+        }
+
+        function clearNearby() {
+            document.getElementById('nearby-section').hidden = true;
+            document.getElementById('nearby-list').innerHTML = '';
         }
 
         function closePanel() {
@@ -1139,6 +1434,7 @@
         loadBeaches();
         loadRainAlert();
         loadCityWeather();
+        loadCityMarine();
     </script>
 </body>
 </html>
