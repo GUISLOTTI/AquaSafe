@@ -10,10 +10,16 @@ file sealed record WindyResponse(
 );
 
 file sealed record WindyWebcam(
-    [property: JsonPropertyName("title")]  string? Title,
-    [property: JsonPropertyName("images")] WindyImages? Images,
-    [property: JsonPropertyName("player")] WindyPlayer? Player,
-    [property: JsonPropertyName("viewCount")] int? ViewCount
+    [property: JsonPropertyName("title")]      string? Title,
+    [property: JsonPropertyName("images")]     WindyImages? Images,
+    [property: JsonPropertyName("player")]     WindyPlayer? Player,
+    [property: JsonPropertyName("viewCount")]  int? ViewCount,
+    [property: JsonPropertyName("categories")] List<WindyCategory>? Categories
+);
+
+file sealed record WindyCategory(
+    [property: JsonPropertyName("id")]   string? Id,
+    [property: JsonPropertyName("name")] string? Name
 );
 
 file sealed record WindyImages(
@@ -79,15 +85,16 @@ public sealed class CameraService(
         );
     }
 
+    private static readonly string[] PreferredCategories = { "coast", "beach", "landscape" };
+
     private async Task<CameraInfo?> FetchWindyAsync(string apiKey, double lat, double lng, CancellationToken ct)
     {
         try
         {
             var inv = System.Globalization.CultureInfo.InvariantCulture;
             var url = $"https://api.windy.com/webcams/api/v3/webcams" +
-                      $"?nearby={lat.ToString(inv)},{lng.ToString(inv)},20" +
-                      $"&limit=1&include=images,player,location" +
-                      $"&categories=beach,coast";
+                      $"?nearby={lat.ToString(inv)},{lng.ToString(inv)},80" +
+                      $"&limit=20&include=images,player,location,categories";
 
             using var req = new HttpRequestMessage(HttpMethod.Get, url);
             req.Headers.Add("x-windy-api-key", apiKey);
@@ -98,8 +105,19 @@ public sealed class CameraService(
             var json = await resp.Content.ReadAsStringAsync(ct);
             var data = JsonSerializer.Deserialize<WindyResponse>(json, JsonOpts);
 
-            var cam = data?.Webcams?.FirstOrDefault();
-            if (cam is null) return null;
+            var webcams = data?.Webcams;
+            if (webcams is null || webcams.Count == 0) return null;
+
+            var cam = webcams
+                .OrderBy(w =>
+                {
+                    if (w.Categories is null || w.Categories.Count == 0) return 99;
+                    for (var i = 0; i < PreferredCategories.Length; i++)
+                        if (w.Categories.Any(c => c.Id == PreferredCategories[i]))
+                            return i;
+                    return 50;
+                })
+                .First();
 
             return new CameraInfo(
                 Source:       "windy",
@@ -115,4 +133,5 @@ public sealed class CameraService(
             return null;
         }
     }
+
 }
