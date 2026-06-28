@@ -31,7 +31,8 @@ file sealed record WindyImageSet(
 );
 
 file sealed record WindyPlayer(
-    [property: JsonPropertyName("day")] string? Day
+    [property: JsonPropertyName("live")] string? Live,
+    [property: JsonPropertyName("day")]  string? Day
 );
 
 public sealed class CameraService(
@@ -119,11 +120,13 @@ public sealed class CameraService(
                 })
                 .First();
 
+            var embed = cam.Player?.Live ?? cam.Player?.Day;
+
             return new CameraInfo(
                 Source:       "windy",
-                EmbedUrl:     cam.Player?.Day,
+                EmbedUrl:     embed,
                 ThumbnailUrl: cam.Images?.Current?.Preview,
-                ExternalUrl:  cam.Player?.Day,
+                ExternalUrl:  embed,
                 Title:        cam.Title ?? "Câmera ao vivo"
             );
         }
